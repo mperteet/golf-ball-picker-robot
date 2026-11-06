@@ -1,7 +1,7 @@
-"""Make the flat ball_detection_algo modules importable from tests/.
+"""Make the flat ball-detection-algo modules importable from tests/.
 
 The scripts import each other as top-level modules (`from detector import ...`)
-because they are run from inside ball_detection_algo/, so tests need that
+because they are run from inside ball-detection-algo/, so tests need that
 directory on sys.path too.
 """
 

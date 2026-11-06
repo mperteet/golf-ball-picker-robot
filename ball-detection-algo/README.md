@@ -279,7 +279,7 @@ it calibrates on COCO, which is right for the stock zero-shot model.
 Copy the **whole** directory, because `metadata.yaml` must stay next to the `.hef`:
 
 ```bash
-scp -r yolo11n_hailo_model <user>@<pi>:<repo>/ball_detection_algo/
+scp -r yolo11n_hailo_model <user>@<pi>:<repo>/ball-detection-algo/
 # on the Pi:
 .venv/bin/python run_webcam.py --camera csi --backend yolo --model yolo11n_hailo_model
 ```

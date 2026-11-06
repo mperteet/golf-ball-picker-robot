@@ -90,7 +90,7 @@ def main() -> None:
 
     print(f"\nExported {out_dir}\n"
           "Copy the whole directory to the Pi (metadata.yaml must stay next to the .hef):\n"
-          f"    scp -r {out_dir} <user>@<pi>:<repo>/ball_detection_algo/\n"
+          f"    scp -r {out_dir} <user>@<pi>:<repo>/ball-detection-algo/\n"
           "Then on the Pi:\n"
           f"    .venv/bin/python run_webcam.py --camera csi --backend yolo --model {out_dir}")
     if args.data:

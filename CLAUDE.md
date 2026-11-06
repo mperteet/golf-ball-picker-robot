@@ -6,14 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Senior capstone for an **Autonomous Golf Ball Picker Robot** — a periodically-operating robot that scans a putting/chipping green (~every 30 min), collects golf balls, returns to a base station, and unloads them into a ball-stacking system. See `capstone_robot_system_plan.md` for the authoritative, up-to-date system concept, decision records, bill of materials, and open questions. **Read that document before making design or component recommendations** — it records decisions already made and their rationale, so proposing alternatives to settled choices (e.g. the controller) needs to engage with the reasoning there.
 
-This is an **early-stage repository**: planning docs, the first computer-vision code (`ball_detection_algo/`, see below), and a VEX prototyping scaffold. CAD lives on disk but is git-ignored. There is no repo-wide build system or CI; the only runnable code lives in the CV module and is driven by the scripts documented there. Its tests run with `python -m pytest tests` from `ball_detection_algo/` (needs `requirements-dev.txt`; no camera or ML install).
+This is an **early-stage repository**: planning docs, the first computer-vision code (`ball-detection-algo/`, see below), and the Pi-to-VEX motor-control code. CAD lives on disk but is git-ignored. There is no repo-wide build system or CI; the only runnable code lives in the CV module and is driven by the scripts documented there. Its tests run with `python -m pytest tests` from `ball-detection-algo/` (needs `requirements-dev.txt`; no camera or ML install).
 
 ## Repository layout
 
 - `capstone_robot_system_plan.md` — the single source of truth for the project. Update it when design decisions change rather than duplicating its content elsewhere.
 - `ball_holder_model/` — Blender sources (`.blend`) and exported meshes (`.stl`) for the physical ball-holder fixture, iterated by version (`v1`, `v1.1`, `v1.2`). `.blend1` files are Blender's automatic backups. When adding an iteration, bump the version suffix and export a matching `.stl` alongside the `.blend`. **These files are git-ignored** (large binaries, no useful diff) — they exist on disk and are shared out-of-band, so don't assume a clone has them.
-- `ball_detection_algo/` — the computer-vision ball-detection code (Python + OpenCV). See the dedicated section below.
-- `vex_prototype_code/` — VEX V5 Python project for mechanical prototyping. Currently only the generated "Hello V5" scaffold.
+- `ball-detection-algo/` — the computer-vision ball-detection code (Python + OpenCV). See the dedicated section below.
+- `rpi-vex-protocol/` — Raspberry Pi ↔ VEX V5 Brain motor control over USB serial: `brain/main.py` (VEXcode Python command server with a 500 ms watchdog) and `pi/vex_motor.py` (Pi-side pyserial client/CLI).
 
 ## Key settled decisions (from the plan doc)
 
@@ -26,13 +26,13 @@ This is an **early-stage repository**: planning docs, the first computer-vision 
   high-value but *not top-priority* capability (priority #4) — hardware reliability
   (drivetrain, collection, return-to-dock) comes first.
 
-## Computer-vision module (`ball_detection_algo/`)
+## Computer-vision module (`ball-detection-algo/`)
 
 Detects golf balls in a camera feed and draws a bounding box around each. The robot's camera
 is a **Raspberry Pi Camera Module 3 Wide** (IMX708, 120° diagonal, autofocus, CSI ribbon),
 selected with `--camera csi`; the dev laptop uses a USB webcam selected by index.
 Written to run **unchanged on the RP5**; the laptop is just the dev box.
-See `ball_detection_algo/README.md` for full usage.
+See `ball-detection-algo/README.md` for full usage.
 
 **Design (deliberate, don't flatten it):** there are **two interchangeable backends**
 behind one contract, `detector(frame) -> list[Detection]`, selected with `--backend`:
@@ -56,7 +56,7 @@ separate scripts: the detection runners (`run_webcam.py`, `test_image.py`, `benc
 through the factory, while the classical-only tools (`calibrate.py`, `tune.py`) call
 `detector.py` directly.
 
-**Environment:** a venv lives at `ball_detection_algo/.venv`. Run scripts with
+**Environment:** a venv lives at `ball-detection-algo/.venv`. Run scripts with
 `.venv\Scripts\python.exe` (Windows) / `.venv/bin/python` (RP5). `pip install -r
 requirements.txt` pulls prebuilt wheels on any Python 3.9–3.14 (OpenCV ships an abi3 wheel);
 no version pin is needed despite the local Python being 3.14. **`requirements-yolo.txt` is
