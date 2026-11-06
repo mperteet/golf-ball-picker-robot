@@ -4,7 +4,7 @@ Senior capstone project: a robot that periodically sweeps a putting/chipping gre
 
 Instead of running continuously, the robot goes out about every 30 minutes and recharges at its dock in between.
 
-> **Status:** early stage. The repo contains the system plan and the computer-vision ball detector. Drivetrain, collection, docking, and navigation are in design.
+> **Status:** early stage. The repo contains the system plan, the computer-vision ball detector, and Pi-to-VEX V5 motor control for prototyping. Drivetrain, collection, docking, and navigation are in design.
 
 ## How it works
 
@@ -56,7 +56,45 @@ python run_webcam.py --camera 1                            # classical backend, 
 python run_webcam.py --camera csi                          # on the robot: Pi Camera Module 3 Wide
 ```
 
-For the YOLO backend, Pi/Hailo setup, calibration, and training a custom model, see **[`ball-detection-algo/README.md`](ball-detection-algo/README.md)**.
+For the YOLO backend, Pi/Hailo setup, calibration, and training a custom model, see **[`ball-detection-algo/README.md`](ball-detection-algo/README.md)**. Tests run with `python -m pytest tests` from `ball-detection-algo/` after `pip install -r requirements-dev.txt`; they need no camera or ML install.
+
+## Motor control (VEX V5 prototype)
+
+[`rpi-vex-protocol/`](rpi-vex-protocol/) lets the Pi drive VEX V5 motors through the Brain's micro-USB port, so drivetrain and mechanism prototypes can run from the same Pi that does vision.
+
+- **[`brain/main.py`](rpi-vex-protocol/brain/main.py)** runs on the V5 Brain (VEXcode V5 Python). It is a line-based serial command server. Its first line, `# vex:disable=repl`, must stay first; without it the REPL takes over the USB port.
+- **[`pi/vex_motor.py`](rpi-vex-protocol/pi/vex_motor.py)** runs on the Pi. It auto-detects the Brain's user serial port and works as a library (`VexBrain`) or as a CLI.
+
+Protocol (ASCII, one command per line, replies `OK ...` or `ERR ...`):
+
+| Command | Effect |
+|---|---|
+| `PING` | Heartbeat, replies `OK PONG` |
+| `SPIN <port> <pct>` | Spin at -100..100 % velocity |
+| `STOP <port\|ALL> [COAST\|BRAKE\|HOLD]` | Stop one motor or all |
+| `MOVE <port> <deg> <pct>` | Go to an absolute encoder position (doesn't wait) |
+| `RESET <port>` | Zero the encoder |
+| `STATUS <port>` | Position, velocity, current, temperature, installed |
+
+**Safety:** the Brain stops every motor if it hears nothing for 500 ms. `VexBrain` sends a heartbeat every 200 ms and stops all motors when it closes, so a crashed or unplugged Pi can't leave the robot driving.
+
+```bash
+# On the Pi: needs pyserial, and your user in the dialout group
+sudo apt install python3-serial
+python3 rpi-vex-protocol/pi/vex_motor.py list               # show VEX serial ports
+python3 rpi-vex-protocol/pi/vex_motor.py spin 1 50 --seconds 2
+python3 rpi-vex-protocol/pi/vex_motor.py move 1 360 40
+python3 rpi-vex-protocol/pi/vex_motor.py status 1
+```
+
+```python
+from vex_motor import VexBrain
+with VexBrain() as brain:      # leaving the block stops every motor
+    brain.spin(1, 50)
+    print(brain.status(1))
+```
+
+`GEARING` in `brain/main.py` defaults to the green 18:1 cartridge. Change it if your motors use the red or blue cartridge.
 
 ## Priorities
 
