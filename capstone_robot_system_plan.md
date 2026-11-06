@@ -112,6 +112,13 @@ robot's real height once that is fixed.
 9. **Unload / Stack:** Collected balls are transferred to the base station and organized by the golf-ball stacker.
 10. **Repeat:** Robot resumes charging/idle operation until the next scheduled collection cycle.
 
+**Prototype status (scan → navigate):** until the final motors arrive, the loop runs on a
+VEX V5 prototype (4-motor tank drive, no intake) driven from the Pi over USB serial. It
+uses reactive visual servoing: aim at the ball lowest in the camera frame (closest, for a
+fixed, downward-tilted camera), turn to face it, then drive at it and stop at the bottom of
+the frame. There is no map or localization yet, so return-to-base is not covered. See
+`navigation/`.
+
 ## 7. Preliminary Hardware Bill of Materials
 
 | Component / subsystem | Quantity / notes | Preliminary budget |
