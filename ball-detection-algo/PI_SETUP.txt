@@ -1,4 +1,4 @@
-RASPBERRY PI 5 SETUP - ball_detection_algo
+RASPBERRY PI 5 SETUP - ball-detection-algo
 ===========================================
 (Summarized from README.md, which has the full details.)
 
@@ -8,7 +8,7 @@ Use 64-bit Raspberry Pi OS.
 1. PI: GET THE CODE
 -------------------
 git clone https://github.com/MicahWPerteet/golf-ball-picker-robot.git
-cd golf-ball-picker-robot/ball_detection_algo
+cd golf-ball-picker-robot/ball-detection-algo
 
 
 2. PI: INSTALL THE HAILO RUNTIME FOR THE AI HAT+ 2 (once)
@@ -45,7 +45,7 @@ python3.X -m venv .venv-dfc
 .venv-dfc/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
 .venv-dfc/bin/pip install -r requirements-yolo.txt ~/Downloads/hailo_dataflow_compiler-*.whl
 .venv-dfc/bin/python export_hailo.py        # -> yolo11n_hailo_model/
-scp -r yolo11n_hailo_model <user>@<pi>:~/golf-ball-picker-robot/ball_detection_algo/
+scp -r yolo11n_hailo_model <user>@<pi>:~/golf-ball-picker-robot/ball-detection-algo/
 
 Copy the WHOLE directory, because metadata.yaml must stay next to the .hef.
 

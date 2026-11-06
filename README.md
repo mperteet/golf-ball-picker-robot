@@ -33,8 +33,8 @@ The full concept, decision records (including why the Pi 5 was chosen over the E
 | Path | Contents |
 |---|---|
 | [`capstone_robot_system_plan.md`](capstone_robot_system_plan.md) | The system plan and the source of truth for design decisions |
-| [`ball_detection_algo/`](ball_detection_algo/) | Golf-ball detection in Python + OpenCV, covered below |
-| [`vex_prototype_code/`](vex_prototype_code/) | VEX V5 project scaffold for mechanical prototyping |
+| [`ball-detection-algo/`](ball-detection-algo/) | Golf-ball detection in Python + OpenCV, covered below |
+| [`rpi-vex-protocol/`](rpi-vex-protocol/) | Raspberry Pi to VEX V5 Brain motor control over USB serial |
 
 CAD for the ball-holder fixture (Blender `.blend` / `.stl`) is kept out of git and shared separately.
 
@@ -48,7 +48,7 @@ The robot's "scan" step. It finds golf balls in a camera frame and returns bound
 Quick start:
 
 ```bash
-cd ball_detection_algo
+cd ball-detection-algo
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python list_cameras.py                                     # find the USB webcam index
@@ -56,7 +56,7 @@ python run_webcam.py --camera 1                            # classical backend, 
 python run_webcam.py --camera csi                          # on the robot: Pi Camera Module 3 Wide
 ```
 
-For the YOLO backend, Pi/Hailo setup, calibration, and training a custom model, see **[`ball_detection_algo/README.md`](ball_detection_algo/README.md)**.
+For the YOLO backend, Pi/Hailo setup, calibration, and training a custom model, see **[`ball-detection-algo/README.md`](ball-detection-algo/README.md)**.
 
 ## Priorities
 
