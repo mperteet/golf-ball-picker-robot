@@ -4,7 +4,7 @@ Senior capstone project: a robot that periodically sweeps a putting/chipping gre
 
 Instead of running continuously, the robot goes out about every 30 minutes and recharges at its dock in between.
 
-> **Status:** early stage. The repo contains the system plan, the computer-vision ball detector, and Pi-to-VEX V5 motor control for prototyping. Drivetrain, collection, docking, and navigation are in design.
+> **Status:** early stage. The repo contains the system plan, the computer-vision ball detector, and Pi-to-VEX V5 motor control, and camera-guided driving to balls on the VEX prototype. The final drivetrain, collection, docking, and full navigation are in design.
 
 ## How it works
 
@@ -35,6 +35,7 @@ The full concept, decision records (including why the Pi 5 was chosen over the E
 | [`capstone_robot_system_plan.md`](capstone_robot_system_plan.md) | The system plan and the source of truth for design decisions |
 | [`ball-detection-algo/`](ball-detection-algo/) | Golf-ball detection in Python + OpenCV, covered below |
 | [`rpi-vex-protocol/`](rpi-vex-protocol/) | Raspberry Pi to VEX V5 Brain motor control over USB serial |
+| [`navigation/`](navigation/) | Camera-guided driving: turns detections into tank-drive commands for the VEX prototype |
 
 CAD for the ball-holder fixture (Blender `.blend` / `.stl`) is kept out of git and shared separately.
 
@@ -95,6 +96,19 @@ with VexBrain() as brain:      # leaving the block stops every motor
 ```
 
 `GEARING` in `brain/main.py` defaults to the green 18:1 cartridge. Change it if your motors use the red or blue cartridge.
+
+## Driving to balls (VEX prototype)
+
+[`navigation/`](navigation/) connects the two modules above. Each frame, the detector's boxes go to a pure controller that picks the closest ball (the one lowest in the frame). The controller turns to face it, drives up to it, and stops. A tank-drive layer then sends the wheel speeds to the Brain. Check motor directions with `drive.py` first, with the wheels off the ground:
+
+```bash
+cd ball-detection-algo
+.venv/bin/python ../navigation/drive.py forward 30 --seconds 1    # every wheel forward?
+.venv/bin/python ../navigation/chase.py --camera 1 --dry-run       # laptop: prints wheel commands only
+.venv/bin/python ../navigation/chase.py --camera csi --max-pct 20  # robot
+```
+
+See [`navigation/README.md`](navigation/README.md) for the state machine, tuning flags and safety stops.
 
 ## Priorities
 
